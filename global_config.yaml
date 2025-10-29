@@ -1,0 +1,245 @@
+# AlphaFactory OS - Global Configuration
+# Version: 1.0
+# Last Updated: 2025-10-29
+
+system:
+  name: "AlphaFactory OS"
+  version: "1.0.0"
+  environment: "development"
+  parallel_jobs: 24
+  max_workers: 24
+  chunk_size: 10000
+  max_memory_gb: 200
+  cache_size_gb: 50
+  project_root: "D:/AI_PROJECTS/alphafactory"
+  data_dir: "D:/AI_PROJECTS/alphafactory/data"
+  logs_dir: "D:/AI_PROJECTS/alphafactory/logs"
+  models_dir: "D:/AI_PROJECTS/alphafactory/models"
+  results_dir: "D:/AI_PROJECTS/alphafactory/results"
+  backtest_dir: "D:/AI_PROJECTS/alphafactory/backtests"
+
+data:
+  sources:
+    polygon:
+      enabled: true
+      priority: 1
+      rate_limit: 5
+      cache_ttl: 300
+    alpha_vantage:
+      enabled: true
+      priority: 2
+      rate_limit: 0.2
+      cache_ttl: 3600
+    yfinance:
+      enabled: true
+      priority: 3
+      rate_limit: 1
+      cache_ttl: 300
+    fmp:
+      enabled: false
+      priority: 1
+      rate_limit: 10
+      cache_ttl: 3600
+  storage:
+    format: "parquet"
+    compression: "snappy"
+    partition_by: "date"
+  validation:
+    check_missing: true
+    check_duplicates: true
+    check_outliers: true
+    outlier_std_threshold: 5.0
+  retention:
+    tick_data_days: 30
+    minute_data_days: 180
+    daily_data_years: 10
+    fundamental_data_years: 10
+
+universe:
+  method: "sp500"
+  filters:
+    min_price: 5.0
+    max_price: 1000.0
+    min_volume: 100000
+    min_market_cap: 1000000000
+    exclude_sectors: []
+  dynamic:
+    enabled: false
+    rebalance_frequency: "monthly"
+    selection_criteria: "liquidity_momentum"
+    max_symbols: 100
+  custom:
+    enabled: false
+    symbols: ["AAPL", "MSFT", "GOOGL", "AMZN", "TSLA"]
+
+strategy:
+  default:
+    timeframe: "1d"
+    lookback_period: 252
+    indicators_cache: true
+  position_sizing:
+    method: "equal_weight"
+    base_position_pct: 2.0
+    max_positions: 20
+    concentration_limit: 10.0
+  entry:
+    min_signal_strength: 0.6
+    require_volume_confirmation: true
+    avoid_earnings_days: true
+    avoid_ex_dividend_days: false
+  exit:
+    use_stop_loss: true
+    stop_loss_pct: 3.0
+    use_trailing_stop: true
+    trailing_stop_pct: 2.0
+    use_profit_target: false
+    profit_target_pct: 10.0
+
+risk:
+  portfolio:
+    max_drawdown_pct: 15.0
+    max_daily_loss_pct: 2.0
+    max_weekly_loss_pct: 5.0
+    var_confidence: 0.95
+  position:
+    max_position_pct: 5.0
+    max_sector_pct: 25.0
+    max_correlated_positions: 5
+    correlation_threshold: 0.7
+  leverage:
+    max_leverage: 1.0
+    margin_safety_buffer: 0.2
+  monitoring:
+    check_frequency: "1h"
+    alert_on_breach: true
+    auto_reduce_on_breach: true
+
+backtest:
+  default:
+    initial_capital: 100000
+    benchmark: "SPY"
+    start_date: "2020-01-01"
+    end_date: "2024-12-31"
+  execution:
+    fill_method: "close"
+    slippage_model: "fixed"
+    slippage_pct: 0.05
+    commission_per_share: 0.005
+    commission_min: 1.00
+  metrics:
+    - "total_return"
+    - "annual_return"
+    - "sharpe_ratio"
+    - "sortino_ratio"
+    - "max_drawdown"
+    - "win_rate"
+    - "profit_factor"
+    - "calmar_ratio"
+  optimization:
+    enabled: false
+    method: "grid_search"
+    n_trials: 1000
+    n_jobs: 24
+    cv_folds: 5
+  walk_forward:
+    enabled: false
+    train_period_months: 12
+    test_period_months: 3
+    refit_frequency: "quarterly"
+
+live:
+  schedule:
+    premarket_start: "04:00"
+    market_open: "09:30"
+    market_close: "16:00"
+    postmarket_end: "20:00"
+    trading_days: ["MON", "TUE", "WED", "THU", "FRI"]
+  orders:
+    default_order_type: "LIMIT"
+    limit_order_offset: 0.01
+    order_timeout_seconds: 60
+    max_order_retries: 3
+    partial_fill_threshold: 0.9
+  positions:
+    check_frequency: "5m"
+    rebalance_frequency: "daily"
+    auto_close_eod: false
+  safety:
+    kill_switch: true
+    max_orders_per_minute: 10
+    max_orders_per_day: 100
+    require_manual_approval: false
+
+notifications:
+  telegram:
+    enabled: false
+    alert_on_trade: true
+    alert_on_error: true
+    alert_on_drawdown: true
+    alert_on_profit_target: true
+    daily_summary: true
+    daily_summary_time: "16:30"
+  email:
+    enabled: false
+    smtp_server: "smtp.gmail.com"
+    smtp_port: 587
+  dashboard:
+    enabled: true
+    update_frequency: "1m"
+    show_notifications: true
+
+ml:
+  shadow_mode:
+    enabled: false
+    log_predictions: true
+    compare_to_rules: true
+  models:
+    - name: "xgboost_classifier"
+      enabled: false
+      retrain_frequency: "weekly"
+      features: "auto"
+    - name: "lightgbm_regressor"
+      enabled: false
+      retrain_frequency: "weekly"
+      target: "next_day_return"
+  features:
+    lag_periods: [1, 2, 3, 5, 10, 20]
+    rolling_windows: [5, 10, 20, 50, 200]
+    technical_indicators: "all"
+  evaluation:
+    test_size: 0.2
+    validation_size: 0.1
+    shuffle: false
+    metrics: ["accuracy", "precision", "recall", "f1", "auc"]
+
+logging:
+  levels:
+    root: "INFO"
+    strategy: "INFO"
+    execution: "INFO"
+    risk: "WARNING"
+    data: "WARNING"
+    ml: "INFO"
+  format: "{time:YYYY-MM-DD HH:mm:ss} | {level: <8} | {name}:{function}:{line} - {message}"
+  rotation: "500 MB"
+  retention: "30 days"
+  compression: "zip"
+  performance:
+    enabled: true
+    log_function_times: true
+    log_memory_usage: true
+    slow_query_threshold_ms: 1000
+
+dashboard:
+  host: "127.0.0.1"
+  port: 8050
+  debug: true
+  refresh:
+    positions: 5
+    pnl: 10
+    charts: 30
+    performance: 60
+  charts:
+    default_period: "1M"
+    candlestick_periods: ["1d", "1h", "15m"]
+    indicator_overlay: true

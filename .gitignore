@@ -1,0 +1,109 @@
+# AlphaFactory OS - Git Ignore Rules
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual Environment
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Jupyter Notebook
+.ipynb_checkpoints
+*.ipynb
+
+# Environment Variables (CRITICAL - Contains API Keys)
+.env
+broker_config.yaml
+*_credentials.yaml
+
+# Data Files (Too Large for Git)
+data/raw/
+data/processed/
+data/features/
+*.csv
+*.parquet
+*.h5
+*.hdf5
+
+# Logs
+logs/
+*.log
+
+# Results
+results/
+*.html
+*.png
+*.pdf
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Backups
+*.bak
+*.backup
+*~
+
+# OS Files
+Thumbs.db
+.DS_Store
+desktop.ini
+
+# Temporary Files
+tmp/
+temp/
+*.tmp
+
+# PyCharm
+.idea/
+
+# VS Code
+.vscode/
+
+# MyPy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Pytest
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Secrets (NEVER COMMIT)
+*secret*
+*password*
+*token*
+*api_key*
